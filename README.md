@@ -38,7 +38,8 @@ Prefer to read before running? `git clone https://github.com/samahart/dotfiles ~
 The installer:
 1. Detects your distro from `/etc/os-release` and installs packages with `zypper` or `apt`, skipping any your release doesn't carry (e.g. `eza` on Ubuntu 22.04)
 2. Symlinks everything in `home/` into `~`, moving any existing files to `~/.dotfiles-backup/<timestamp>/`
-3. Creates `~/.bashrc.local` and `~/.gitconfig.local` (with your git name/email) for machine-specific settings
+3. Configures git as `samahart <25089526+samahart@users.noreply.github.com>` (GitHub's no-reply address) via `home/.gitconfig`
+4. Creates empty `~/.bashrc.local` and `~/.gitconfig.local` for machine-specific settings (e.g. a work email)
 
 Because the files are **symlinks**, editing `~/.bashrc` edits the repo. Commit and push, then re-run the one-liner (or `git -C ~/dotfiles pull`) on your other machines.
 
@@ -77,7 +78,7 @@ Every push is tested on fresh openSUSE Tumbleweed, Leap, and Ubuntu 22.04/24.04 
 - `zoxide`: `z proj` jumps to your most-used matching directory
 - `bat` as the man-page pager
 
-**Also:** sensible `.gitconfig` (main branch, rebase on pull, auto-setup remote) and a minimal `.vimrc`.
+**Also:** `.gitconfig` with your identity plus sensible defaults (main branch, rebase on pull, auto-setup remote) and a minimal `.vimrc`.
 
 ## Packages installed
 

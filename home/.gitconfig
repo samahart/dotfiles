@@ -1,6 +1,10 @@
-# ~/.gitconfig — your name/email go in ~/.gitconfig.local (the installer offers to create it)
-[include]
-    path = ~/.gitconfig.local
+# ~/.gitconfig — shared on every machine.
+# Per-machine overrides (e.g. a work email) go in ~/.gitconfig.local, included at the bottom.
+
+# GitHub's no-reply address keeps your real email out of public commits
+[user]
+    name = samahart
+    email = 25089526+samahart@users.noreply.github.com
 
 [init]
     defaultBranch = main
@@ -30,3 +34,7 @@
     last = log -1 HEAD --stat
     undo = reset --soft HEAD~1
     amend = commit --amend --no-edit
+
+# Loaded last so anything in it wins
+[include]
+    path = ~/.gitconfig.local

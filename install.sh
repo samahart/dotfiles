@@ -149,19 +149,17 @@ EOF
 fi
 
 if [[ ! -e $HOME/.gitconfig.local ]] && ! ((DRY_RUN)); then
-    name="" email=""
-    if ((ASSUME_YES == 0)) && [[ -t 0 ]]; then
-        info "Git identity (stored in ~/.gitconfig.local; leave blank to skip)"
-        read -rp "  Name:  " name
-        read -rp "  Email: " email
-    fi
-    {
-        echo "# ~/.gitconfig.local — personal git settings, not tracked"
-        echo "[user]"
-        [[ -n $name ]]  && echo "    name = $name"  || echo "#   name = Your Name"
-        [[ -n $email ]] && echo "    email = $email" || echo "#   email = you@example.com"
-    } >"$HOME/.gitconfig.local"
-    ok "Created ~/.gitconfig.local"
+    cat >"$HOME/.gitconfig.local" <<'EOF'
+# ~/.gitconfig.local — per-machine git overrides, not tracked by the dotfiles repo.
+# Your name/email come from ~/.gitconfig; override them here if needed, e.g.:
+# [user]
+#     email = you@work.example
+EOF
+    ok "Created ~/.gitconfig.local for per-machine git overrides"
+fi
+
+if command -v git >/dev/null && ! ((DRY_RUN)); then
+    ok "git $(git --version | awk '{print $3}') configured as $(git config --global user.name) <$(git config --global user.email)>"
 fi
 
 echo

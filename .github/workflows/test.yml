@@ -67,5 +67,6 @@ jobs:
             grep -q "main" <<<"$out"
             grep -q "?1" <<<"$out"
             command -v git fzf rg
+            test "$(git config --global user.email)" = "25089526+samahart@users.noreply.github.com"
             echo "bash $BASH_VERSION OK"
           '
