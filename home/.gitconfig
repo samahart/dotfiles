@@ -1,0 +1,32 @@
+# ~/.gitconfig — your name/email go in ~/.gitconfig.local (the installer offers to create it)
+[include]
+    path = ~/.gitconfig.local
+
+[init]
+    defaultBranch = main
+[core]
+    editor = vim
+    autocrlf = input
+[pull]
+    rebase = true
+[push]
+    autoSetupRemote = true
+[fetch]
+    prune = true
+[rebase]
+    autoStash = true
+[diff]
+    colorMoved = default
+[merge]
+    conflictStyle = zdiff3
+[color]
+    ui = auto
+[alias]
+    st = status -sb
+    co = checkout
+    sw = switch
+    br = branch
+    lg = log --oneline --graph --decorate --all
+    last = log -1 HEAD --stat
+    undo = reset --soft HEAD~1
+    amend = commit --amend --no-edit

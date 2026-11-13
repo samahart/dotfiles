@@ -1,0 +1,71 @@
+# Runs the real one-line bootstrap on fresh openSUSE and Ubuntu containers
+# every time you push, plus a lint pass. Check results in the repo's "Actions" tab.
+name: test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: |
+          shellcheck -s bash -e SC1090,SC1091,SC2034 \
+            bootstrap.sh install.sh uninstall.sh \
+            home/.bashrc home/.bash_profile home/.config/bash/*.bash
+
+  install:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - opensuse/tumbleweed
+          - opensuse/leap:latest
+          - ubuntu:24.04
+          - ubuntu:22.04
+    container: ${{ matrix.image }}
+    env:
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ github.ref_name }}
+      SHA: ${{ github.sha }}
+    steps:
+      - name: Set up a "fresh install" user with sudo
+        run: |
+          if command -v zypper >/dev/null; then
+            zypper --non-interactive install --no-recommends sudo shadow util-linux findutils curl
+          else
+            apt-get update -qq
+            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo curl
+          fi
+          useradd -m -s /bin/bash tester
+          echo 'tester ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/tester
+          chmod 440 /etc/sudoers.d/tester
+
+      - name: Run the one-liner (git is NOT preinstalled)
+        run: |
+          su - tester -c "curl -fsSL https://raw.githubusercontent.com/$REPO/$SHA/bootstrap.sh \
+            | DOTFILES_REPO=$REPO DOTFILES_BRANCH=$BRANCH bash -s -- --yes"
+
+      - name: Run it again (should be a no-op)
+        run: |
+          su - tester -c "DOTFILES_REPO=$REPO DOTFILES_BRANCH=$BRANCH bash ~/dotfiles/bootstrap.sh --yes"
+
+      - name: Verify the shell loads and the prompt works
+        run: |
+          su - tester -c '
+            set -e
+            test -L ~/.bashrc
+            mkdir -p ~/repo && cd ~/repo && git init -q -b main && touch new
+            out=$(bash -ic "type -t __prompt_command; alias ll; __prompt_command; echo \"\$PS1\"" 2>/dev/null)
+            echo "$out"
+            grep -q "^function$" <<<"$out"
+            grep -q "main" <<<"$out"
+            grep -q "?1" <<<"$out"
+            command -v git fzf rg
+            echo "bash $BASH_VERSION OK"
+          '

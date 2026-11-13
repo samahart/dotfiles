@@ -1,0 +1,26 @@
+# ~/.inputrc — readline settings (affects bash and anything else using readline)
+$include /etc/inputrc
+
+# Tab completion
+set completion-ignore-case on        # case-insensitive
+set completion-map-case on           # treat - and _ as the same
+set show-all-if-ambiguous on         # list matches on first Tab
+set mark-symlinked-directories on    # add / to symlinked dirs
+set colored-stats on                 # colour completions like ls
+set colored-completion-prefix on     # highlight the typed part
+set visible-stats on
+set skip-completed-text on
+
+# Up/Down search history for what you've already typed
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# Ctrl-Left / Ctrl-Right move by word
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word
+
+# No beeping
+set bell-style none
+
+# Don't echo ^C
+set echo-control-characters off
